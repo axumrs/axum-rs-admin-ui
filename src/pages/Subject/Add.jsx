@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 export default function SubjectAdd() {
   const navigate = useNavigate();
   const sumbitHandler = async (values) => {
-    const res = await (await fetcher.post("/subject", values)).data;
+    const { data: res } = await fetcher.post("/subject", values);
     if (res.code == 0) {
       navigate("/subject/list");
     }
