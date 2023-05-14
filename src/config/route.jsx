@@ -1,6 +1,7 @@
 import Home from "../pages/Home";
 import SubjectIndex from "../pages/Subject";
 import SubjectAdd from "../pages/Subject/Add";
+import SubjectEdit from "../pages/Subject/Edit";
 
 export default [
   {
@@ -17,6 +18,10 @@ export default [
       {
         path: "add",
         element: <SubjectAdd />,
+      },
+      {
+        path: "edit/:id",
+        element: <SubjectEdit />,
       },
     ],
   },
