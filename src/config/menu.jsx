@@ -9,7 +9,7 @@ export default {
     },
     {
       path: "/subject",
-      name: "专题",
+      name: "专题管理",
       icon: <DashboardFilled />,
       routes: [
         {
@@ -20,6 +20,23 @@ export default {
         {
           path: "add",
           name: "添加专题",
+          icon: <DashboardFilled />,
+        },
+      ],
+    },
+    {
+      path: "/topic",
+      name: "文章管理",
+      icon: <DashboardFilled />,
+      routes: [
+        {
+          path: "list",
+          name: "文章列表",
+          icon: <DashboardFilled />,
+        },
+        {
+          path: "add",
+          name: "添加文章",
           icon: <DashboardFilled />,
         },
       ],

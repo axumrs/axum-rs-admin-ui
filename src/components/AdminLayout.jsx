@@ -22,7 +22,7 @@ export default function AdminLayout() {
       )}
       route={menu}
       breadcrumbRender={false}
-      waterMarkProps={{ content: "AXUM.RS" }}
+      // waterMarkProps={{ content: "AXUM.RS" }}
     >
       <PageContainer>
         <ProCard>{routes}</ProCard>
