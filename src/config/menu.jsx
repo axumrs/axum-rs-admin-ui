@@ -41,5 +41,22 @@ export default {
         },
       ],
     },
+    {
+      path: "/tag",
+      name: "标签管理",
+      icon: <DashboardFilled />,
+      routes: [
+        {
+          path: "list",
+          name: "标签列表",
+          icon: <DashboardFilled />,
+        },
+        {
+          path: "add",
+          name: "添加标签",
+          icon: <DashboardFilled />,
+        },
+      ],
+    },
   ],
 };
