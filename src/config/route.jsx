@@ -4,6 +4,7 @@ import SubjectAdd from "../pages/Subject/Add";
 import SubjectEdit from "../pages/Subject/Edit";
 import TagIndex from "../pages/Tag";
 import TagAdd from "../pages/Tag/Add";
+import TagEdit from "../pages/Tag/Edit";
 import TopicIndex from "../pages/Topic";
 import TopicAdd from "../pages/Topic/Add";
 import TopicEdit from "../pages/Topic/Edit";
@@ -58,10 +59,10 @@ export default [
         path: "add",
         element: <TagAdd />,
       },
-      // {
-      //   path: "edit/:id",
-      //   element: <TopicEdit />,
-      // },
+      {
+        path: "edit/:id",
+        element: <TagEdit />,
+      },
     ],
   },
 ];
