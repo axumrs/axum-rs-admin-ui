@@ -1,3 +1,6 @@
+import AdminIndex from "../pages/Admin";
+import AdminAdd from "../pages/Admin/Add";
+import AdminEdit from "../pages/Admin/Edit";
 import Home from "../pages/Home";
 import SubjectIndex from "../pages/Subject";
 import SubjectAdd from "../pages/Subject/Add";
@@ -62,6 +65,23 @@ export default [
       {
         path: "edit/:id",
         element: <TagEdit />,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    children: [
+      {
+        path: "list",
+        element: <AdminIndex />,
+      },
+      {
+        path: "add",
+        element: <AdminAdd />,
+      },
+      {
+        path: "edit/:id",
+        element: <AdminEdit />,
       },
     ],
   },

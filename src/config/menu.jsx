@@ -58,5 +58,22 @@ export default {
         },
       ],
     },
+    {
+      path: "/admin",
+      name: "管理员",
+      icon: <DashboardFilled />,
+      routes: [
+        {
+          path: "list",
+          name: "管理员列表",
+          icon: <DashboardFilled />,
+        },
+        {
+          path: "add",
+          name: "添加管理员",
+          icon: <DashboardFilled />,
+        },
+      ],
+    },
   ],
 };
