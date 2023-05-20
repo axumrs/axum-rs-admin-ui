@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@ant-design/pro-components": "^2.4.14",
+    "@hcaptcha/react-hcaptcha": "^1.8.1",
+    "@marsidev/react-turnstile": "^0.2.1",
     "antd": "^5.4.7",
     "axios": "^1.4.0",
     "react": "^18.2.0",
