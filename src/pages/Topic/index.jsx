@@ -4,6 +4,7 @@ import fetcher from "../../fetcher";
 import { Button, Popconfirm, Tag, message } from "antd";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
+import DataTimeFormat from "../../components/DataTimeFormat";
 
 export default function TopicIndex() {
   const actionRef = useRef();
@@ -36,6 +37,7 @@ export default function TopicIndex() {
       title: "发布时间",
       dataIndex: "dateline",
       hideInSearch: true,
+      render: (_, { dateline }) => <DataTimeFormat>{dateline}</DataTimeFormat>,
     },
     {
       title: "删除",
@@ -149,21 +151,16 @@ export default function TopicIndex() {
   ];
 
   const fetchData = async (params) => {
-    const { data: result } = await fetcher.get(
-      "/topic",
-      {
-        params: {
-          page_size: params.pageSize,
-          page: params.current - 1,
-          ...params,
-        },
+    const { data: result } = await fetcher.get("/topic", {
+      params: {
+        page_size: params.pageSize,
+        page: params.current - 1,
+        ...params,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${getAuth().token}`,
-        },
-      }
-    );
+      headers: {
+        Authorization: `Bearer ${getAuth().token}`,
+      },
+    });
 
     return {
       data: result?.data?.data,

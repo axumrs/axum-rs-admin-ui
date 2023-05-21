@@ -11,6 +11,9 @@ import TagEdit from "../pages/Tag/Edit";
 import TopicIndex from "../pages/Topic";
 import TopicAdd from "../pages/Topic/Add";
 import TopicEdit from "../pages/Topic/Edit";
+import UserIndex from "../pages/User";
+import UserAdd from "../pages/User/Add";
+import UserEdit from "../pages/User/Edit";
 
 export default [
   {
@@ -82,6 +85,23 @@ export default [
       {
         path: "edit/:id",
         element: <AdminEdit />,
+      },
+    ],
+  },
+  {
+    path: "/user",
+    children: [
+      {
+        path: "list",
+        element: <UserIndex />,
+      },
+      {
+        path: "add",
+        element: <UserAdd />,
+      },
+      {
+        path: "edit/:id",
+        element: <UserEdit />,
       },
     ],
   },

@@ -43,17 +43,12 @@ export default function TopicEdit() {
     }
   };
   const fetchSubjectList = async () => {
-    const { data: res } = await fetcher.get(
-      "/subject",
-      {
-        params: { page: 0, page_size: 1000, is_del: false },
+    const { data: res } = await fetcher.get("/subject", {
+      params: { page: 0, page_size: 1000, is_del: false },
+      headers: {
+        Authorization: `Bearer ${getAuth().token}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${getAuth().token}`,
-        },
-      }
-    );
+    });
 
     const {
       data: { data },
@@ -62,17 +57,12 @@ export default function TopicEdit() {
     return data.map((row) => ({ label: row.name, value: row.id }));
   };
   const fetchTagList = async () => {
-    const { data: res } = await fetcher.get(
-      "/tag",
-      {
-        params: { page: 0, page_size: 1000, is_del: false },
+    const { data: res } = await fetcher.get("/tag", {
+      params: { page: 0, page_size: 1000, is_del: false },
+      headers: {
+        Authorization: `Bearer ${getAuth().token}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${getAuth().token}`,
-        },
-      }
-    );
+    });
 
     const {
       data: { data },

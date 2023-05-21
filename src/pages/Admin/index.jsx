@@ -110,21 +110,16 @@ export default function AdminIndex() {
   ];
   const fetchData = async (params) => {
     console.log(params);
-    const { data: result } = await fetcher.get(
-      "/admin",
-      {
-        params: {
-          page_size: params.pageSize,
-          page: params.current - 1,
-          ...params,
-        },
+    const { data: result } = await fetcher.get("/admin", {
+      params: {
+        page_size: params.pageSize,
+        page: params.current - 1,
+        ...params,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${getAuth().token}`,
-        },
-      }
-    );
+      headers: {
+        Authorization: `Bearer ${getAuth().token}`,
+      },
+    });
 
     return {
       data: result?.data?.data,

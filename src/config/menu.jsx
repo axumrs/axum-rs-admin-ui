@@ -75,5 +75,22 @@ export default {
         },
       ],
     },
+    {
+      path: "/user",
+      name: "用户管理",
+      icon: <DashboardFilled />,
+      routes: [
+        {
+          path: "list",
+          name: "用户列表",
+          icon: <DashboardFilled />,
+        },
+        {
+          path: "add",
+          name: "添加用户",
+          icon: <DashboardFilled />,
+        },
+      ],
+    },
   ],
 };
