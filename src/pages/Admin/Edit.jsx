@@ -1,22 +1,37 @@
 import { ProForm, ProFormText } from "@ant-design/pro-components";
-import React from "react";
+import React, { useContext } from "react";
 import fetcher from "../../fetcher";
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export default function AdminEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { getAuth } = useContext(AuthContext);
+
   const sumbitHandler = async (values) => {
-    const { data: res } = await fetcher.put("/admin", {
-      ...values,
-      id: parseInt(id, 10),
-    });
+    const { data: res } = await fetcher.put(
+      "/admin",
+      {
+        ...values,
+        id: parseInt(id, 10),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAuth().token}`,
+        },
+      }
+    );
     if (res.code == 0) {
       navigate("/admin/list");
     }
   };
   const findAdmin = async () => {
-    const { data: res } = await fetcher.get(`/admin/${id}`);
+    const { data: res } = await fetcher.get(`/admin/${id}`, {
+      headers: {
+        Authorization: `Bearer ${getAuth().token}`,
+      },
+    });
     const { data } = res;
     return { ...data, password: "" };
   };

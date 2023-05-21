@@ -6,24 +6,39 @@ import {
   ProFormTextArea,
 } from "@ant-design/pro-components";
 
-import React from "react";
+import React, { useContext } from "react";
 import fetcher from "../../fetcher";
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export default function SubjectEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { getAuth } = useContext(AuthContext);
+
   const findSubject = async () => {
-    const { data: res } = await fetcher.get(`/subject/${id}`);
+    const { data: res } = await fetcher.get(`/subject/${id}`, {
+      headers: {
+        Authorization: `Bearer ${getAuth().token}`,
+      },
+    });
     const { data } = res;
     return { ...data, price: data.price / 100 };
   };
   const sumbitHandler = async (values) => {
     console.log(values);
-    const { data: res } = await fetcher.put(`/subject`, {
-      ...values,
-      id: parseInt(id, 10),
-    });
+    const { data: res } = await fetcher.put(
+      `/subject`,
+      {
+        ...values,
+        id: parseInt(id, 10),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAuth().token}`,
+        },
+      }
+    );
     if (res.code == 0) {
       navigate("/subject/list");
     }

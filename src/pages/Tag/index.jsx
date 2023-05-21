@@ -1,11 +1,14 @@
 import { ProTable } from "@ant-design/pro-components";
 import { Tag, Button, Popconfirm, message } from "antd";
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import fetcher from "../../fetcher";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export default function TagIndex() {
   const actionRef = useRef();
+  const { getAuth } = useContext(AuthContext);
+
   const columns = [
     {
       title: "ID",
@@ -55,10 +58,20 @@ export default function TagIndex() {
             okText="确定"
             cancelText="取消"
             onConfirm={() => {
-              fetcher.patch(`/tag/${id}`).then(({ data }) => {
-                actionRef.current.reload();
-                message.success(`标签 ${name} 恢复成功`);
-              });
+              fetcher
+                .patch(
+                  `/tag/${id}`,
+                  {},
+                  {
+                    headers: {
+                      Authorization: `Bearer ${getAuth().token}`,
+                    },
+                  }
+                )
+                .then(({ data }) => {
+                  actionRef.current.reload();
+                  message.success(`标签 ${name} 恢复成功`);
+                });
             }}
           >
             <Button size="small" type="default">
@@ -73,10 +86,16 @@ export default function TagIndex() {
             okText="确定"
             cancelText="取消"
             onConfirm={() => {
-              fetcher.delete(`/tag/${id}`).then(({ data }) => {
-                actionRef.current.reload();
-                message.success(`标签 ${name} 删除成功`);
-              });
+              fetcher
+                .delete(`/tag/${id}`, {
+                  headers: {
+                    Authorization: `Bearer ${getAuth().token}`,
+                  },
+                })
+                .then(({ data }) => {
+                  actionRef.current.reload();
+                  message.success(`标签 ${name} 删除成功`);
+                });
             }}
           >
             <Button size="small" type="primary" ghost danger>
@@ -89,13 +108,21 @@ export default function TagIndex() {
   ];
   const fetchData = async (params) => {
     console.log(params);
-    const { data: result } = await fetcher.get("/tag", {
-      params: {
-        page_size: params.pageSize,
-        page: params.current - 1,
-        ...params,
+    const { data: result } = await fetcher.get(
+      "/tag",
+      {
+        params: {
+          page_size: params.pageSize,
+          page: params.current - 1,
+          ...params,
+        },
       },
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${getAuth().token}`,
+        },
+      }
+    );
 
     return {
       data: result?.data?.data,

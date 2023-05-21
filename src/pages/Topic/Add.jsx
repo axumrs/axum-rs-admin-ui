@@ -5,24 +5,38 @@ import {
   ProFormText,
   ProFormTextArea,
 } from "@ant-design/pro-components";
-import React from "react";
+import React, { useContext } from "react";
 import fetcher from "../../fetcher";
-import { message } from "antd";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export default function TopicAdd() {
   const navigate = useNavigate();
+  const { getAuth } = useContext(AuthContext);
+
   const sumbitHandler = async (values) => {
     // console.log(values);
-    const { data: res } = await fetcher.post("/topic", values);
+    const { data: res } = await fetcher.post("/topic", values, {
+      headers: {
+        Authorization: `Bearer ${getAuth().token}`,
+      },
+    });
     if (res.code === 0) {
       navigate("/topic/list");
     }
   };
   const fetchSubjectList = async () => {
-    const { data: res } = await fetcher.get("/subject", {
-      params: { page: 0, page_size: 1000, is_del: false },
-    });
+    const { data: res } = await fetcher.get(
+      "/subject",
+      {
+        params: { page: 0, page_size: 1000, is_del: false },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAuth().token}`,
+        },
+      }
+    );
 
     const {
       data: { data },
@@ -31,9 +45,17 @@ export default function TopicAdd() {
     return data.map((row) => ({ label: row.name, value: row.id }));
   };
   const fetchTagList = async () => {
-    const { data: res } = await fetcher.get("/tag", {
-      params: { page: 0, page_size: 1000, is_del: false },
-    });
+    const { data: res } = await fetcher.get(
+      "/tag",
+      {
+        params: { page: 0, page_size: 1000, is_del: false },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAuth().token}`,
+        },
+      }
+    );
 
     const {
       data: { data },

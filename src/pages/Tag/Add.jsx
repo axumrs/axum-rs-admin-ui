@@ -1,12 +1,19 @@
 import { ProForm, ProFormText } from "@ant-design/pro-components";
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import fetcher from "../../fetcher";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export default function TagAdd() {
   const navigate = useNavigate();
+  const { getAuth } = useContext(AuthContext);
+
   const sumbitHandler = async (values) => {
-    const { data: res } = await fetcher.post("/tag", values);
+    const { data: res } = await fetcher.post("/tag", values, {
+      headers: {
+        Authorization: `Bearer ${getAuth().token}`,
+      },
+    });
     if (res.code == 0) {
       navigate("/tag/list");
     }

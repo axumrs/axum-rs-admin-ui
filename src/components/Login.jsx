@@ -16,14 +16,16 @@ export default function Login() {
       message.error("请完成人机验证");
       return;
     }
-    const { data } = await fetcher.post("/../auth/admin/login", {
+    const {
+      data: { data },
+    } = await fetcher.post("/../auth/admin/login", {
       ...values,
       response: captchaResponse,
     });
     console.log(data);
     setCaptchaResponse("");
     captchaRef.current.resetCaptcha();
-    // setAuth({ auth: "fff" });
+    setAuth({ ...data });
   };
   return (
     <>

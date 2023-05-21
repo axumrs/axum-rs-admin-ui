@@ -5,34 +5,55 @@ import {
   ProFormText,
   ProFormTextArea,
 } from "@ant-design/pro-components";
-import React from "react";
+import React, { useContext } from "react";
 import fetcher from "../../fetcher";
-
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export default function TopicEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { getAuth } = useContext(AuthContext);
 
   const findTopic = async () => {
-    const { data: res } = await fetcher.get(`/topic/${id}`);
+    const { data: res } = await fetcher.get(`/topic/${id}`, {
+      headers: {
+        Authorization: `Bearer ${getAuth().token}`,
+      },
+    });
     const { data } = res;
     console.log(data);
     return data;
   };
   const sumbitHandler = async (values) => {
-    const { data: res } = await fetcher.put(`/topic`, {
-      ...values,
-      id: parseInt(id, 10),
-    });
+    const { data: res } = await fetcher.put(
+      `/topic`,
+      {
+        ...values,
+        id: parseInt(id, 10),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAuth().token}`,
+        },
+      }
+    );
     if (res.code == 0) {
       navigate("/topic/list");
     }
   };
   const fetchSubjectList = async () => {
-    const { data: res } = await fetcher.get("/subject", {
-      params: { page: 0, page_size: 1000, is_del: false },
-    });
+    const { data: res } = await fetcher.get(
+      "/subject",
+      {
+        params: { page: 0, page_size: 1000, is_del: false },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAuth().token}`,
+        },
+      }
+    );
 
     const {
       data: { data },
@@ -41,9 +62,17 @@ export default function TopicEdit() {
     return data.map((row) => ({ label: row.name, value: row.id }));
   };
   const fetchTagList = async () => {
-    const { data: res } = await fetcher.get("/tag", {
-      params: { page: 0, page_size: 1000, is_del: false },
-    });
+    const { data: res } = await fetcher.get(
+      "/tag",
+      {
+        params: { page: 0, page_size: 1000, is_del: false },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getAuth().token}`,
+        },
+      }
+    );
 
     const {
       data: { data },
