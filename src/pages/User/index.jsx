@@ -26,14 +26,22 @@ export default function UserIndex() {
       title: "昵称",
       dataIndex: "nickname",
     },
-    {
-      title: "等级",
-      dataIndex: "level",
-    },
+
     {
       title: "积分",
       dataIndex: "points",
       hideInSearch: true,
+    },
+    {
+      title: "设备数",
+      dataIndex: "allow_device_num",
+      hideInSearch: true,
+    },
+    {
+      title: "JWT时长",
+      dataIndex: "jwt_exp",
+      hideInSearch: true,
+      render: (_, { jwt_exp }) => (jwt_exp ? <>{jwt_exp}分钟</> : <>自动</>),
     },
 
     {
@@ -134,7 +142,7 @@ export default function UserIndex() {
       title: "操作",
       key: "option",
       valueType: "option",
-      render: (_, { id, is_del, status }) => [
+      render: (_, { id, is_del, status, email }) => [
         <Button key={`edit-${id}`} size="small" type="primary" ghost>
           <Link to={`/user/edit/${id}`}>修 改</Link>
         </Button>,
@@ -336,6 +344,9 @@ export default function UserIndex() {
             </Popconfirm>
           </>
         ),
+        <Button key={`login_log-${id}`} size="small" type="default">
+          <Link to={`/user/login_log/${email}/${id}`}>登录历史</Link>
+        </Button>,
       ],
     },
   ];

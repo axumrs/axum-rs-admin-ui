@@ -14,6 +14,7 @@ import TopicEdit from "../pages/Topic/Edit";
 import UserIndex from "../pages/User";
 import UserAdd from "../pages/User/Add";
 import UserEdit from "../pages/User/Edit";
+import UserLoginLog from "../pages/User/LoginLog";
 
 export default [
   {
@@ -102,6 +103,10 @@ export default [
       {
         path: "edit/:id",
         element: <UserEdit />,
+      },
+      {
+        path: "login_log/:email/:user_id",
+        element: <UserLoginLog />,
       },
     ],
   },

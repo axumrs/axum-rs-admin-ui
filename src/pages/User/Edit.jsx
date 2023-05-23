@@ -110,6 +110,22 @@ export default function UserEdit() {
           rules={[{ required: true, message: "请设置用户状态" }]}
         />
         <ProFormDateTimePicker name="sub_exp" label="订阅到期时间" />
+        <ProFormDigit
+          min={1}
+          max={3}
+          name="allow_device_num"
+          label="允许登录的设备数"
+          placeholder="请输入用户允许登录的设备数"
+          rules={[{ required: true, message: "请输入用户允许登录的设备数" }]}
+        />
+        <ProFormDigit
+          min={0}
+          max={120}
+          name="jwt_exp"
+          label="JWT时长"
+          placeholder="请输入用户JWT时长，0为使用全局配置"
+          rules={[{ required: true, message: "请输入用户JWT时长" }]}
+        />
       </ProForm>
     </>
   );
