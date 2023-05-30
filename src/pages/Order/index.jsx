@@ -1,11 +1,13 @@
 import { ProTable } from "@ant-design/pro-components";
 import { Tag, Button, Popconfirm, message } from "antd";
+
 import React, { useContext, useRef } from "react";
+
 import fetcher from "../../fetcher";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 
-export default function TagIndex() {
+export default function OrderIndex() {
   const actionRef = useRef();
   const { getAuth } = useContext(AuthContext);
 
@@ -16,8 +18,63 @@ export default function TagIndex() {
       hideInSearch: true,
     },
     {
-      title: "名称",
-      dataIndex: "name",
+      title: "订单号",
+      dataIndex: "order_num",
+    },
+    {
+      title: "确认码",
+      dataIndex: "code",
+    },
+    {
+      title: "价格",
+      dataIndex: "price",
+      render: (_, { price }) => <>{price / 100}</>,
+      hideInSearch: true,
+    },
+    {
+      title: "用户",
+      dataIndex: "user_id",
+      render: (_, { email, nickname }) => (
+        <>
+          {email}({nickname})
+        </>
+      ),
+      hideInSearch: true,
+    },
+
+    {
+      title: "状态",
+      dataIndex: "status",
+      render: (_, { status }) =>
+        status === "Finished" ? (
+          <Tag color="cyan">完成</Tag>
+        ) : (
+          <Tag color="gold">待支付</Tag>
+        ),
+      valueType: "select",
+      fieldProps: {
+        options: [
+          {
+            label: "待支付",
+            value: "Pending",
+          },
+          {
+            label: "完成",
+            value: "Finished",
+          },
+        ],
+      },
+    },
+    {
+      title: "下单时间",
+      dataIndex: "dateline",
+      render: (_, { dateline }) => <>{dateline}</>,
+      hideInSearch: true,
+    },
+    {
+      title: "支付ID",
+      dataIndex: "pay_id",
+      hideInSearch: true,
     },
     {
       title: "删除",
@@ -46,21 +103,21 @@ export default function TagIndex() {
       title: "操作",
       key: "option",
       valueType: "option",
-      render: (_, { id, name, is_del }) => [
-        <Button key={`edit-${id}`} size="small" type="primary" ghost>
-          <Link to={`/tag/edit/${id}`}>修 改</Link>
+      render: (_, { id, is_del, user_id }) => [
+        <Button size="small" type="primary" ghost>
+          <Link to={`/order/detail/${id}/${user_id}`}>详 情</Link>
         </Button>,
         is_del ? (
           <Popconfirm
             key={`restore-${id}`}
             title="确认操作"
-            description={`确定要恢复「${name}」标签吗？`}
+            description={`确定要恢复吗？`}
             okText="确定"
             cancelText="取消"
             onConfirm={() => {
               fetcher
                 .patch(
-                  `/tag/${id}`,
+                  `/order/${id}`,
                   {},
                   {
                     headers: {
@@ -70,7 +127,7 @@ export default function TagIndex() {
                 )
                 .then(({ data }) => {
                   actionRef.current.reload();
-                  message.success(`标签 ${name} 恢复成功`);
+                  message.success(` 恢复成功`);
                 });
             }}
           >
@@ -82,19 +139,19 @@ export default function TagIndex() {
           <Popconfirm
             key={`del-${id}`}
             title="确认操作"
-            description={`确定要删除「${name}」标签吗？`}
+            description={`确定要删除吗？`}
             okText="确定"
             cancelText="取消"
             onConfirm={() => {
               fetcher
-                .delete(`/tag/${id}`, {
+                .delete(`/order/${id}`, {
                   headers: {
                     Authorization: `Bearer ${getAuth().token}`,
                   },
                 })
                 .then(({ data }) => {
                   actionRef.current.reload();
-                  message.success(`标签 ${name} 删除成功`);
+                  message.success(` 删除成功`);
                 });
             }}
           >
@@ -106,9 +163,10 @@ export default function TagIndex() {
       ],
     },
   ];
+
   const fetchData = async (params) => {
     console.log(params);
-    const { data: result } = await fetcher.get("/tag", {
+    const { data: result } = await fetcher.get("/order", {
       params: {
         page_size: params.pageSize,
         page: params.current - 1,
@@ -127,10 +185,11 @@ export default function TagIndex() {
   };
   return (
     <ProTable
-      columns={columns}
-      actionRef={actionRef}
+      rowKey="id"
       request={fetchData}
+      columns={columns}
       pagination={{ pageSize: 30 }}
+      actionRef={actionRef}
     />
   );
 }

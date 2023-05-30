@@ -2,6 +2,10 @@ import AdminIndex from "../pages/Admin";
 import AdminAdd from "../pages/Admin/Add";
 import AdminEdit from "../pages/Admin/Edit";
 import Home from "../pages/Home";
+import OrderIndex from "../pages/Order";
+import OrderDetail from "../pages/Order/Detail";
+import PurchasedServiceIndex from "../pages/PurchasedService";
+import PurchasedServiceDetail from "../pages/PurchasedService/Detail";
 import SubjectIndex from "../pages/Subject";
 import SubjectAdd from "../pages/Subject/Add";
 import SubjectEdit from "../pages/Subject/Edit";
@@ -107,6 +111,32 @@ export default [
       {
         path: "login_log/:email/:user_id",
         element: <UserLoginLog />,
+      },
+    ],
+  },
+  {
+    path: "/order",
+    children: [
+      {
+        path: "list",
+        element: <OrderIndex />,
+      },
+      {
+        path: "detail/:id/:user_id",
+        element: <OrderDetail />,
+      },
+    ],
+  },
+  {
+    path: "/purchased_service",
+    children: [
+      {
+        path: "list",
+        element: <PurchasedServiceIndex />,
+      },
+      {
+        path: "detail/:id",
+        element: <PurchasedServiceDetail />,
       },
     ],
   },

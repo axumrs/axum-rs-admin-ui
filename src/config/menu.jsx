@@ -92,5 +92,29 @@ export default {
         },
       ],
     },
+    {
+      path: "/order",
+      name: "订单管理",
+      icon: <DashboardFilled />,
+      routes: [
+        {
+          path: "list",
+          name: "订单列表",
+          icon: <DashboardFilled />,
+        },
+      ],
+    },
+    {
+      path: "/purchased_service",
+      name: "已购服务",
+      icon: <DashboardFilled />,
+      routes: [
+        {
+          path: "list",
+          name: "所有列表",
+          icon: <DashboardFilled />,
+        },
+      ],
+    },
   ],
 };
