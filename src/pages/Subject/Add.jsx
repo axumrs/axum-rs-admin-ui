@@ -27,7 +27,7 @@ export default function SubjectAdd() {
   };
   return (
     <ProForm
-      initialValues={{ price: 0, cover: "", status: "Writing" }}
+      initialValues={{ price: 0, cover: "", status: "Writing",pin:0 }}
       onFinish={sumbitHandler}
     >
       <ProFormText
@@ -77,6 +77,14 @@ export default function SubjectAdd() {
           { label: "完结", value: "Finished" },
         ]}
       />
+      <ProFormDigit
+          name="pin"
+          label="排序"
+          placeholder="请输入专题排序"
+          rules={[
+            { required: true, message: "请输入专题排序" },
+          ]}
+        />
     </ProForm>
   );
 }

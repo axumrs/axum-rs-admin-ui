@@ -92,6 +92,14 @@ export default function SubjectEdit() {
           { label: "完结", value: "Finished" },
         ]}
       />
+      <ProFormDigit
+          name="pin"
+          label="排序"
+          placeholder="请输入专题排序"
+          rules={[
+            { required: true, message: "请输入专题排序" },
+          ]}
+        />
     </ProForm>
   );
 }
