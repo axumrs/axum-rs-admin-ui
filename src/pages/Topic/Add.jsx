@@ -1,5 +1,6 @@
 import {
   ProForm,
+  ProFormDigit,
   ProFormRadio,
   ProFormSelect,
   ProFormText,
@@ -61,6 +62,7 @@ export default function TopicAdd() {
           try_readable: false,
           author: "AXUM中文网",
           src: "axum.rs",
+          pin:0,
         }}
         onFinish={sumbitHandler}
       >
@@ -146,6 +148,14 @@ export default function TopicAdd() {
             { label: "允许", value: true },
           ]}
           rules={[{ required: true, message: "请设置是否允许试读" }]}
+        />
+         <ProFormDigit
+          name="pin"
+          label="排序"
+          placeholder="请输入文章排序"
+          rules={[
+            { required: true, message: "请输入文章排序" },
+          ]}
         />
       </ProForm>
     </>

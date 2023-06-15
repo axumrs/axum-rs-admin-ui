@@ -1,5 +1,6 @@
 import {
   ProForm,
+  ProFormDigit,
   ProFormRadio,
   ProFormSelect,
   ProFormText,
@@ -155,6 +156,14 @@ export default function TopicEdit() {
             { label: "允许", value: true },
           ]}
           rules={[{ required: true, message: "请设置是否允许试读" }]}
+        />
+        <ProFormDigit
+          name="pin"
+          label="排序"
+          placeholder="请输入文章排序"
+          rules={[
+            { required: true, message: "请输入文章排序" },
+          ]}
         />
       </ProForm>
     </>
