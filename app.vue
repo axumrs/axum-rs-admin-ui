@@ -1,6 +1,11 @@
+<script setup lang="ts">
+useHead({
+  title: "AXUM中文网",
+  link: [{ rel: "icon", href: "https://file.axum.rs/asset/logo.png" }],
+});
+</script>
 <template>
-  <div>
-    <NuxtRouteAnnouncer />
-    <NuxtWelcome />
-  </div>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
