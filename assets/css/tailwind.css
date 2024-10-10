@@ -7,10 +7,10 @@
     @apply font-light;
   }
   body {
-    @apply bg-gray-50  h-svh overflow-y-auto;
+    @apply bg-gray-50  h-svh;
   }
 
   #__nuxt {
-    @apply h-full overflow-y-auto;
+    @apply h-full;
   }
 }
