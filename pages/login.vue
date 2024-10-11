@@ -28,7 +28,7 @@ const state = reactive({
 const { $post } = use$fetch();
 const { $toast, $msg } = use$status();
 const { $login } = use$auth();
-const { _to } = useRoute().query;
+const { _to, _expired } = useRoute().query;
 const onSubmit = async (e: FormSubmitEvent<Schema>) => {
   if (!e.data.captcha) {
     $toast("请完成人机验证");
@@ -43,6 +43,12 @@ const onSubmit = async (e: FormSubmitEvent<Schema>) => {
     }
   });
 };
+
+onMounted(() => {
+  if (_expired && _expired.toString() === "1") {
+    $toast("会话已过期，请重新登录");
+  }
+});
 </script>
 
 <template>

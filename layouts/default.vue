@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import dayjs from "dayjs";
+
 const links = [
   [
     {
@@ -41,6 +43,10 @@ const links = [
     },
   ],
 ];
+
+const { $expireTime } = use$auth();
+const expireTimeSeconds = () =>
+  $expireTime.value?.diff(dayjs(), "seconds") || -1;
 </script>
 
 <template>
@@ -52,6 +58,13 @@ const links = [
       </h2>
 
       <UVerticalNavigation :links="links" class="space-y-2" />
+
+      <div
+        v-if="expireTimeSeconds() > 0 && expireTimeSeconds() <= 120"
+        class="text-sm text-orange-500 pl-3"
+      >
+        本次会话将在 {{ expireTimeSeconds() }} 秒后过期
+      </div>
     </aside>
 
     <main class="col-span-10 h-full overflow-y-auto p-6">

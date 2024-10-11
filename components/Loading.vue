@@ -5,7 +5,7 @@
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <Icon
         name="ri:loader-2-line"
-        class="animate-spin text-[#a31cb0]"
+        class="animate-spin text-cyan-600"
         size="2rem"
       />
     </div>
