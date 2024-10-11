@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     public: {
       turnstileSitekey: process.env.TURNSTILE_SITEKEY,
       apiUrl: process.env.API_URL,
+      websiteUrl: process.env.WEBSITE_URL,
     },
   },
 });

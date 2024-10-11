@@ -12,6 +12,7 @@
   "dependencies": {
     "@nuxt/ui": "^2.18.7",
     "dayjs": "^1.11.13",
+    "decimal.js": "^10.4.3",
     "nuxt": "^3.13.0",
     "vue": "latest",
     "vue-router": "latest",
