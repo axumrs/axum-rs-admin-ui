@@ -14,3 +14,18 @@
     @apply h-full;
   }
 }
+
+@layer components {
+  .axum-table {
+    @apply border-y;
+  }
+  .axum-table tbody tr {
+    @apply even:bg-gray-50/60 hover:bg-gray-100;
+  }
+  .axum-table thead tr {
+    @apply bg-gray-50/60 shadow-sm;
+  }
+  .axum-table thead th {
+    @apply font-bold;
+  }
+}

@@ -57,7 +57,7 @@ const expireTimeSeconds = () =>
         <span class="text-xl font-normal">AXUM中文网</span>
       </h2>
 
-      <UVerticalNavigation :links="links" class="space-y-2" />
+      <UVerticalNavigation :links="links" class="space-y-2 bg-white" />
 
       <div
         v-if="expireTimeSeconds() > 0 && expireTimeSeconds() <= 120"

@@ -8,7 +8,7 @@ const { $loading } = use$status();
 </script>
 <template>
   <NuxtLayout>
-    <NuxtPage />
+    <NuxtPage :key="useRoute().fullPath" />
   </NuxtLayout>
 
   <Loading v-if="$loading" />
