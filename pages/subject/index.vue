@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import Decimal from "decimal.js";
 
-const { $get } = use$fetch();
+const { $get, $del, $patch, $post, $put } = use$fetch();
+const { $msg } = use$status();
 
 const rows = ref<Subject[]>([]);
 const pm = ref<PaginationMeta>();
@@ -78,6 +79,69 @@ const loadData = async () => {
   );
 };
 
+const showInput = ref(false);
+const emptySubject: Subject = {
+  id: "",
+  name: "",
+  slug: "",
+  summary: "",
+  is_del: false,
+  cover: "",
+  status: "Writing",
+  price: "0",
+  pin: 0,
+};
+const inputSubject = ref<Subject>({ ...emptySubject });
+const showDel = ref(false);
+const showRes = ref(false);
+const delItem = ref<(Subject & { real?: boolean }) | null>(null);
+const resItem = ref<Subject | null>(null);
+
+const handleDelOrRestory = async (action: "del" | "res") => {
+  if (action === "del" && delItem.value) {
+    await $del(
+      `/admin/subject/${delItem.value.id}`,
+      () => {
+        showDel.value = false;
+        delItem.value = null;
+        $msg("删除成功");
+        loadData().then();
+      },
+      { query: { real: delItem.value.real } }
+    );
+    return;
+  }
+
+  if (action === "res" && resItem.value) {
+    await $patch(`/admin/subject/${resItem.value.id}`, {}, () => {
+      showDel.value = false;
+      resItem.value = null;
+      $msg("还原成功");
+      loadData().then();
+    });
+    return;
+  }
+};
+
+const handleSubmit = async () => {
+  if (!inputSubject.value.id.trim().length) {
+    await $post("/admin/subject", { ...inputSubject.value }, (v) => {
+      showInput.value = false;
+      inputSubject.value = { ...emptySubject };
+      $msg("添加成功");
+      loadData().then();
+    });
+    return;
+  }
+
+  await $put("/admin/subject", { ...inputSubject.value }, (v) => {
+    showInput.value = false;
+    inputSubject.value = { ...emptySubject };
+    $msg("修改成功");
+    loadData().then();
+  });
+};
+
 const websiteUrl = useRuntimeConfig().public.websiteUrl;
 const deci = (v: string) => {
   try {
@@ -104,6 +168,12 @@ await loadData();
     @clear="
       () => {
         frm = { ...emptyFrm };
+      }
+    "
+    @add="
+      () => {
+        showInput = true;
+        inputSubject = { ...emptySubject };
       }
     "
   >
@@ -177,15 +247,60 @@ await loadData();
 
     <template #actions-data="{ row }">
       <div class="flex justify-start items-center gap-x-1">
-        <UButton color="teal" size="xs" icon="ri:edit-line" variant="outline"
+        <UButton
+          color="cyan"
+          size="xs"
+          icon="ri:edit-line"
+          variant="outline"
+          @click="
+            () => {
+              showInput = true;
+              inputSubject = { ...row };
+            }
+          "
           >编辑</UButton
         >
+        <UButton
+          color="orange"
+          size="xs"
+          icon="ri:delete-bin-5-line"
+          variant="outline"
+          v-if="!row.is_del"
+          @click="
+            () => {
+              showDel = true;
+              delItem = { ...row, real: false };
+            }
+          "
+          >删除</UButton
+        >
+        <UButton
+          v-else
+          color="primary"
+          size="xs"
+          icon="ri:reset-right-line"
+          variant="outline"
+          @click="
+            () => {
+              showRes = true;
+              resItem = { ...row };
+            }
+          "
+          >还原</UButton
+        >
+
         <UButton
           color="red"
           size="xs"
           icon="ri:delete-bin-5-line"
           variant="outline"
-          >删除</UButton
+          @click="
+            () => {
+              showDel = true;
+              delItem = { ...row, real: true };
+            }
+          "
+          >物删</UButton
         >
       </div>
     </template>
@@ -203,4 +318,45 @@ await loadData();
       "
     />
   </div>
+
+  <UModal v-model="showInput">
+    <SubjectInput v-model="inputSubject" @submit="handleSubmit" />
+  </UModal>
+
+  <Confirm
+    title="确认删除"
+    v-model="showDel"
+    v-if="delItem"
+    @cancel="
+      () => {
+        showDel = false;
+        delItem = null;
+      }
+    "
+    @ok="handleDelOrRestory('del')"
+  >
+    <span v-if="delItem.real" class="text-red-600">物理删除后不可恢复，</span
+    >确定删除<span
+      class="underline underline-offset-8 text-orange-600 decoration-wavy"
+      >{{ delItem.name }}</span
+    >吗?
+  </Confirm>
+
+  <Confirm
+    title="确认还原"
+    v-model="showRes"
+    v-if="resItem"
+    @cancel="
+      () => {
+        showRes = false;
+        resItem = null;
+      }
+    "
+    @ok="handleDelOrRestory('res')"
+  >
+    确定还原<span
+      class="underline underline-offset-8 text-orange-600 decoration-wavy"
+      >{{ resItem.name }}</span
+    >吗?
+  </Confirm>
 </template>
