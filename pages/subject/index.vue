@@ -290,6 +290,7 @@ await loadData();
         >
 
         <UButton
+          v-if="false"
           color="red"
           size="xs"
           icon="ri:delete-bin-5-line"

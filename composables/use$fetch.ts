@@ -38,7 +38,7 @@ export default function use$fetch() {
     return useFetch(url, newOpts)
       .then(({ data }) => {
         if (!data.value) {
-          throw new AppFetchError("请检查网络");
+          throw new AppFetchError("请检查网络1");
         }
         if (data.value && data.value.code !== 0) {
           throw new AppFetchError(data.value.msg);
@@ -59,7 +59,7 @@ export default function use$fetch() {
           $toast(e.message);
           return;
         }
-        $toast("请检查网络");
+        $toast("请检查网络2");
       })
       .finally(() => {
         $isLoading.value = false;
