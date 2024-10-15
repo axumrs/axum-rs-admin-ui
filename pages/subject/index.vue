@@ -212,7 +212,7 @@ await loadData();
       <a
         target="_blank"
         :href="`${websiteUrl}/subject/${row.slug}`"
-        class="underline decoration-dotted"
+        class="underline decoration-dotted hover:text-red-600"
         >{{ row.slug }}</a
       >
     </template>

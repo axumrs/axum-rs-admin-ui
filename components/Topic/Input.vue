@@ -21,8 +21,11 @@ type Schema = z.infer<typeof schema>;
 const modelValue = defineModel<TopicWithTagNames>({ required: true });
 
 const { $get } = use$fetch();
+const emits = defineEmits(["submit"]);
 
-const onSubmit = async (_: FormSubmitEvent<Schema>) => {};
+const onSubmit = async (_: FormSubmitEvent<Schema>) => {
+  emits("submit");
+};
 
 const subjectList = ref<Subject[]>([]);
 const tagList = ref<Tag[]>([]);
