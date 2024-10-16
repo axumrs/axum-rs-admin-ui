@@ -13,7 +13,7 @@ const schema = z.object({
   md: z.string().min(1, "请输入内容"),
   try_readable: z.boolean(),
   pin: z.number().int(),
-  tag_names: z.array(z.string()).min(1, "请选择标签"),
+  // tag_names: z.array({}),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -21,9 +21,15 @@ type Schema = z.infer<typeof schema>;
 const modelValue = defineModel<TopicWithTagNames>({ required: true });
 
 const { $get } = use$fetch();
+const { $toast } = use$status();
 const emits = defineEmits(["submit"]);
 
-const onSubmit = async (_: FormSubmitEvent<Schema>) => {
+const onSubmit = async (e: FormSubmitEvent<Schema>) => {
+  if (!(modelValue.value.tag_names && modelValue.value.tag_names.length)) {
+    $toast("请选择标签");
+    return;
+  }
+
   emits("submit");
 };
 
@@ -32,13 +38,13 @@ const tagList = ref<Tag[]>([]);
 
 const loadSubjectList = async () => {
   await $get<Subject[]>("/admin/subject/all", (v) => {
-    subjectList.value = v || [];
+    subjectList.value = v?.reverse() || [];
   });
 };
 
 const loadTagList = async () => {
   await $get<Tag[]>("/admin/tag/all", (v) => {
-    tagList.value = v || [];
+    tagList.value = v?.reverse() || [];
   });
 };
 
@@ -115,7 +121,7 @@ onMounted(() => {
           </UFormGroup>
 
           <UFormGroup label="排序" name="pin" required>
-            <UInput required v-model="modelValue.pin" />
+            <UInput required v-model.number="modelValue.pin" />
           </UFormGroup>
 
           <UFormGroup label="摘要" name="summary" required>

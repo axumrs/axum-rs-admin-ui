@@ -83,7 +83,8 @@ const columns = [
   },
 ];
 
-const { $get } = use$fetch();
+const { $get, $post, $put } = use$fetch();
+const { $msg } = use$status();
 const loadData = async () => {
   await $get<Pagination<TopicWithSubjectAndTags>>(
     "/admin/topic",
@@ -101,7 +102,32 @@ const loadData = async () => {
   );
 };
 
-const handleSubmit = async () => {};
+const handleSubmit = async () => {
+  const tag_names = inputTopic.value.tag_names.map((t) => t.name);
+  if (!inputTopic.value.id.trim().length) {
+    await $post(
+      "/admin/topic",
+      {
+        ...inputTopic.value,
+        tag_names,
+      },
+      () => {
+        showInput.value = false;
+        inputTopic.value = { ...emptyTopic };
+        $msg("添加成功");
+        loadData().then();
+      }
+    );
+    return;
+  }
+
+  await $put("/admin/topic", { ...inputTopic.value, tag_names }, () => {
+    showInput.value = false;
+    inputTopic.value = { ...emptyTopic };
+    $msg("修改成功");
+    loadData().then();
+  });
+};
 
 const websiteUrl = useRuntimeConfig().public.websiteUrl;
 const { $neq } = use$obj();
