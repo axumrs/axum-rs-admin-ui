@@ -16,7 +16,7 @@ const schema = z.object({
   // tag_names: z.array({}),
 });
 
-type Schema = z.infer<typeof schema>;
+type Schema = z.output<typeof schema>;
 
 const modelValue = defineModel<TopicWithTagNames>({ required: true });
 
