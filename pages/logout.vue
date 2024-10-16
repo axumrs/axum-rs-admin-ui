@@ -5,10 +5,13 @@ const handleCancel = () => {
 
 const { $logout } = use$auth();
 const { $msg } = use$status();
+const { $del } = use$fetch();
 const handleLogout = async () => {
-  $logout();
-  $msg("你已成功退出登录");
-  return navigateTo("/login");
+  await $del("/admin/session/logout", () => {
+    $logout();
+    $msg("你已成功退出登录");
+    return navigateTo("/login") as void;
+  });
 };
 </script>
 
