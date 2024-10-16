@@ -47,6 +47,10 @@ const frm = ref<{
 
 const showInput = ref(false);
 const inputTopic = ref<TopicWithTagNames>({ ...emptyTopic });
+const showDel = ref(false);
+const delItem = ref<TopicWithTagNames | null>(null);
+const showRes = ref(false);
+const resItem = ref<TopicWithTagNames | null>(null);
 
 const pm = ref<PaginationMeta>();
 const rows = ref<(TopicWithSubjectAndTags & { tag_names: CreatableTag[] })[]>(
@@ -83,7 +87,7 @@ const columns = [
   },
 ];
 
-const { $get, $post, $put } = use$fetch();
+const { $get, $post, $put, $del, $patch } = use$fetch();
 const { $msg } = use$status();
 const loadData = async () => {
   await $get<Pagination<TopicWithSubjectAndTags>>(
@@ -127,6 +131,28 @@ const handleSubmit = async () => {
     $msg("修改成功");
     loadData().then();
   });
+};
+
+const handleDelOrRestory = async (action: "del" | "res") => {
+  if (action === "del" && delItem.value) {
+    await $del(`/admin/topic/${delItem.value.id}`, () => {
+      showDel.value = false;
+      delItem.value = null;
+      $msg("删除成功");
+      loadData().then();
+    });
+    return;
+  }
+
+  if (action === "res" && resItem.value) {
+    await $patch(`/admin/topic/${resItem.value.id}`, {}, () => {
+      showDel.value = false;
+      resItem.value = null;
+      $msg("还原成功");
+      loadData().then();
+    });
+    return;
+  }
 };
 
 const websiteUrl = useRuntimeConfig().public.websiteUrl;
@@ -249,6 +275,34 @@ await loadData();
           "
           >编辑</UButton
         >
+        <UButton
+          color="red"
+          size="xs"
+          icon="ri:delete-bin-5-line"
+          variant="outline"
+          v-if="!row.is_del"
+          @click="
+            () => {
+              showDel = true;
+              delItem = { ...row };
+            }
+          "
+          >删除</UButton
+        >
+        <UButton
+          v-else
+          color="primary"
+          size="xs"
+          icon="ri:reset-right-line"
+          variant="outline"
+          @click="
+            () => {
+              showRes = true;
+              resItem = { ...row };
+            }
+          "
+          >还原</UButton
+        >
       </div>
     </template>
   </UTable>
@@ -274,4 +328,40 @@ await loadData();
   >
     <TopicInput v-model="inputTopic" @submit="handleSubmit" />
   </UModal>
+
+  <Confirm
+    title="确认删除"
+    v-model="showDel"
+    v-if="delItem"
+    @cancel="
+      () => {
+        showDel = false;
+        delItem = null;
+      }
+    "
+    @ok="handleDelOrRestory('del')"
+  >
+    确定删除<span
+      class="underline underline-offset-8 text-orange-600 decoration-wavy"
+      >{{ delItem.title }}</span
+    >吗?
+  </Confirm>
+
+  <Confirm
+    title="确认还原"
+    v-model="showRes"
+    v-if="resItem"
+    @cancel="
+      () => {
+        showRes = false;
+        resItem = null;
+      }
+    "
+    @ok="handleDelOrRestory('res')"
+  >
+    确定还原<span
+      class="underline underline-offset-8 text-orange-600 decoration-wavy"
+      >{{ resItem.title }}</span
+    >吗?
+  </Confirm>
 </template>
