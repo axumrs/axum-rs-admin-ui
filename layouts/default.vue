@@ -27,6 +27,12 @@ const links = [
       to: "/tag",
       labelClass: "text-lg",
     },
+    {
+      label: "用户",
+      icon: "ri:user-line",
+      to: "/user",
+      labelClass: "text-lg",
+    },
   ],
   [
     {
