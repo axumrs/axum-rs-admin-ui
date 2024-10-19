@@ -55,8 +55,8 @@ const emptyItem = {
   kind: "Normal",
   sub_exp: "",
   points: "0",
-  allow_device_num: 0,
-  session_exp: 0,
+  allow_device_num: 1,
+  session_exp: 20,
   need_reverify_email: false,
   password: "",
   re_password: "",
@@ -87,6 +87,22 @@ const handleSubmit = async () => {
     });
     return;
   }
+
+  await $put(
+    "/admin/user",
+    {
+      ...inputItem.value,
+      sub_exp: dayjs(inputItem.value.sub_exp)
+        .format("YYYY-MM-DD HH:mm:ss")
+        .toString(),
+    },
+    () => {
+      showInput.value = false;
+      inputItem.value = { ...emptyItem };
+      $msg("修改成功");
+      loadData().then();
+    }
+  );
 };
 
 const { $neq } = use$obj();
@@ -164,9 +180,14 @@ await loadData();
     </template>
 
     <template #kind-data="{ row }">
-      <UBadge v-if="row.kind === 'Subscriber'" size="xs" variant="subtle"
-        >订阅用户</UBadge
-      >
+      <div v-if="row.kind === 'Subscriber'" class="space-y-1">
+        <div>
+          <UBadge size="xs" variant="subtle" color="orange">订阅用户</UBadge>
+        </div>
+        <div class="text-xs">
+          {{ dayjs(row.sub_exp).format("YYYY-MM-DD HH:mm:ss") }}
+        </div>
+      </div>
       <UBadge v-else size="xs" variant="subtle" color="white">普通用户</UBadge>
     </template>
 

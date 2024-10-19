@@ -16,6 +16,16 @@ const schema = z.object({
   kind: z.enum(["Normal", "Subscriber"], { message: "请选择用户类型" }),
   sub_exp: z.string(),
   points: z.string(),
+  allow_device_num: z
+    .number()
+    .int("设备数必须是整数")
+    .min(1, "设备数至少 1 个")
+    .max(5, "设备数最多 5 个"),
+  session_exp: z
+    .number()
+    .int("会话过期时长必须是整数")
+    .min(1, "会话过期时长至少 1 分钟")
+    .max(1440, "会话过期时长最多 1440 分钟"),
 });
 
 const statusList = [
@@ -77,10 +87,10 @@ const onSubmit = async (_: FormSubmitEvent<Schema>) => {
       <UFormGroup label="昵称" name="nickname" required>
         <UInput v-model="modelValue.nickname" />
       </UFormGroup>
-      <UFormGroup label="密码" name="password" required v-if="!isEdit">
+      <UFormGroup label="密码" name="password" :required="!isEdit">
         <UInput v-model="modelValue.password" type="password" />
       </UFormGroup>
-      <UFormGroup label="重复密码" name="re_password" required v-if="!isEdit">
+      <UFormGroup label="重复密码" name="re_password" :required="!isEdit">
         <UInput v-model="modelValue.re_password" type="password" />
       </UFormGroup>
       <UFormGroup label="状态" name="status" required>
@@ -106,10 +116,16 @@ const onSubmit = async (_: FormSubmitEvent<Schema>) => {
         required
         v-if="modelValue.kind === 'Subscriber'"
       >
-        <UInput v-model="modelValue.sub_exp" type="datetime-local" />
+        <DateTimePick v-model="modelValue.sub_exp" class="" />
       </UFormGroup>
       <UFormGroup label="积分" name="points" required>
         <UInput v-model="modelValue.points" />
+      </UFormGroup>
+      <UFormGroup label="允许登录的设备数" name="allow_device_num" required>
+        <UInput v-model.number="modelValue.allow_device_num" />
+      </UFormGroup>
+      <UFormGroup label="会话过期时长（分钟）" name="session_exp" required>
+        <UInput v-model.number="modelValue.session_exp" />
       </UFormGroup>
 
       <div class="flex justify-end">

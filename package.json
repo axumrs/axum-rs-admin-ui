@@ -15,6 +15,7 @@
     "decimal.js": "^10.4.3",
     "nuxt": "^3.13.0",
     "vue": "latest",
+    "vue-flatpickr-component": "^11.0.5",
     "vue-router": "latest",
     "vue-turnstile": "^1.0.11",
     "zod": "^3.23.8"
