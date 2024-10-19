@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
 
-const { $get, $post, $put } = use$fetch();
+const { $get, $post, $put, $del } = use$fetch();
 const { $msg } = use$status();
 
 const pm = ref<PaginationMeta>();
@@ -63,6 +63,8 @@ const emptyItem = {
 };
 const showInput = ref(false);
 const inputItem = ref<UserForm>({ ...emptyItem });
+const showDel = ref(false);
+const delItem = ref<User | null>(null);
 
 const loadData = async () => {
   await $get<Pagination<User>>(
@@ -103,6 +105,17 @@ const handleSubmit = async () => {
       loadData().then();
     }
   );
+};
+
+const handleDel = async () => {
+  if (delItem.value) {
+    await $del(`/admin/user/${delItem.value.id}`, () => {
+      showDel.value = false;
+      delItem.value = null;
+      $msg("删除成功");
+      loadData().then();
+    });
+  }
 };
 
 const { $neq } = use$obj();
@@ -212,12 +225,11 @@ await loadData();
           "
           >编辑</UButton
         >
-        <!-- <UButton
+        <UButton
           color="red"
           size="xs"
           icon="ri:delete-bin-5-line"
           variant="outline"
-          v-if="!row.is_del"
           @click="
             () => {
               showDel = true;
@@ -225,7 +237,7 @@ await loadData();
             }
           "
           >删除</UButton
-        > -->
+        >
       </div>
     </template>
   </UTable>
@@ -246,4 +258,22 @@ await loadData();
   <UModal v-model="showInput">
     <UserInput v-model="inputItem" @submit="handleSubmit" />
   </UModal>
+
+  <Confirm
+    title="确认删除"
+    v-model="showDel"
+    v-if="delItem"
+    @cancel="
+      () => {
+        showDel = false;
+        delItem = null;
+      }
+    "
+    @ok="handleDel"
+  >
+    确定彻底删除<span
+      class="underline underline-offset-8 text-orange-600 decoration-wavy"
+      >{{ delItem.email }}</span
+    >吗?
+  </Confirm>
 </template>
