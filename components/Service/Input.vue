@@ -26,6 +26,8 @@ const schame = z.object({
     .int("年付订阅用户折扣必须是整数")
     .min(0, "折扣必须是正整数")
     .max(100, "你要赔钱？"),
+  desc: z.string().min(1, "请输入详情"),
+  pin: z.number().int("排序必须是整数"),
 });
 
 const modelValue = defineModel<Service>({ required: true });
@@ -33,6 +35,8 @@ const modelValue = defineModel<Service>({ required: true });
 const emits = defineEmits(["submit"]);
 
 const { $toast } = use$status();
+
+const isEdit = computed(() => modelValue.value.id.length === 20);
 const onSubmit = async () => {
   if (modelValue.value.is_subject && modelValue.value.target_id.length !== 20) {
     $toast("请选择专题");
@@ -64,6 +68,9 @@ const loadSubject = async () => {
     "/admin/subject/all",
     (v) => {
       subjectList.value = v || [];
+      selectSubject.value = subjectList.value.find(
+        (s) => s.id === modelValue.value.target_id
+      );
     },
     { query: { has_price: true } }
   );
@@ -86,6 +93,7 @@ watch(
     modelValue.value.name = "";
     modelValue.value.cover = "";
     modelValue.value.duration = 0;
+    modelValue.value.desc = "";
   }
 );
 
@@ -98,6 +106,7 @@ watch(
       modelValue.value.name = v.name;
       modelValue.value.cover = v.cover;
       modelValue.value.duration = 0;
+      modelValue.value.desc = v.summary;
     }
   }
 );
@@ -106,7 +115,8 @@ watch(
 <template>
   <div class="p-6">
     <DailogTitle>
-      <span>添加服务</span>
+      <span v-if="isEdit">修改服务</span>
+      <span v-else>添加服务</span>
     </DailogTitle>
     <UForm
       :schema="schame"
@@ -115,12 +125,13 @@ watch(
       autocomplete="off"
       class="my-6 space-y-4"
     >
-      <UFormGroup label="是否专题" name="is_subject" required>
+      <UFormGroup label="是否专题" name="is_subject" required v-if="!isEdit">
         <UToggle
           v-model="modelValue.is_subject"
           on-icon="i-heroicons-check-20-solid"
           off-icon="i-heroicons-x-mark-20-solid"
           size="lg"
+          :disabled="isEdit"
         />
       </UFormGroup>
 
@@ -162,6 +173,14 @@ watch(
       <UFormGroup label="封面" name="cover" v-if="!modelValue.is_subject">
         <UInput v-model="modelValue.cover" />
       </UFormGroup>
+      <UFormGroup
+        label="详情"
+        name="desc"
+        required
+        v-if="!modelValue.is_subject"
+      >
+        <UTextarea v-model="modelValue.desc" />
+      </UFormGroup>
 
       <UFormGroup
         label="时效（天）"
@@ -172,6 +191,9 @@ watch(
         <UInput v-model.number="modelValue.duration" />
       </UFormGroup>
 
+      <UFormGroup label="排序" name="pin" required>
+        <UInput v-model.number="modelValue.pin" />
+      </UFormGroup>
       <UFormGroup label="普通用户折扣" name="normal_discount" required>
         <UInput v-model.number="modelValue.normal_discount" />
       </UFormGroup>

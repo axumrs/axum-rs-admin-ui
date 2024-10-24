@@ -11,4 +11,6 @@ type Service = {
   sub_discount: number;
   target_id: string;
   yearly_sub_discount: number;
+  desc: string;
+  pin: number;
 };
