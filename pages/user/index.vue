@@ -57,7 +57,6 @@ const emptyItem = {
   points: "0",
   allow_device_num: 1,
   session_exp: 20,
-  need_reverify_email: false,
   password: "",
   re_password: "",
 };

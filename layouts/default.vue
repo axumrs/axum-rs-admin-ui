@@ -33,6 +33,12 @@ const links = [
       to: "/user",
       labelClass: "text-lg",
     },
+    {
+      label: "服务",
+      icon: "ri:server-line",
+      to: "/service",
+      labelClass: "text-lg",
+    },
   ],
   [
     {
