@@ -26,12 +26,13 @@ const emits = defineEmits(["clear", "search", "add"]);
         <UButton size="xs" icon="ri:search-line" type="submit">搜索</UButton>
       </div>
     </form>
-    <div class="shrink-0">
+    <div class="shrink-0 flex justify-start items-center gap-x-2">
       <slot name="actions">
         <UButton icon="ri:add-circle-line" color="sky" @click="emits('add')"
           >添加</UButton
         ></slot
       >
+      <slot name="extra-actions"></slot>
     </div>
   </section>
 </template>
