@@ -39,6 +39,12 @@ const links = [
       to: "/service",
       labelClass: "text-lg",
     },
+    {
+      label: "订单",
+      icon: "ri:server-line",
+      to: "/order",
+      labelClass: "text-lg",
+    },
   ],
   [
     {
