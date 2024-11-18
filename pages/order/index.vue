@@ -5,6 +5,21 @@ import Decimal from "decimal.js";
 const pm = ref<PaginationMeta>();
 const rows = ref<OrderWithUser[]>([]);
 
+const emptyItem = {
+  email: "",
+  nickname: "",
+  id: "",
+  user_id: "",
+  amount: "",
+  actual_amount: "",
+  status: "",
+  snapshot: "",
+  allow_pointer: false,
+  dateline: "",
+};
+const showInput = ref(false);
+const inputItem = ref<OrderWithUser>({ ...emptyItem });
+
 const columns = [
   {
     key: "id",
@@ -54,6 +69,17 @@ await loadData();
 
 <template>
   <PageTitle icon="ri:server-line">订单</PageTitle>
+
+  <Toolbar
+    class="my-6"
+    @add="
+      () => {
+        showInput = true;
+        inputItem = { ...emptyItem };
+      }
+    "
+  ></Toolbar>
+
   <UTable :rows="rows" class="axum-table bg-white my-6" :columns="columns">
     <template #id-data="{ row }">
       <span class="px-1 py-0.5 text-[.65rem] text-gray-400">{{
@@ -84,4 +110,8 @@ await loadData();
       }}</span>
     </template>
   </UTable>
+
+  <UModal v-model="showInput">
+    <OrderInput v-model="inputItem" />
+  </UModal>
 </template>
