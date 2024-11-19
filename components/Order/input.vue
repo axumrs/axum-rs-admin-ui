@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Decimal from "decimal.js";
 import { z } from "zod";
 const modelValue = defineModel<OrderWithUser>({ required: true });
 
@@ -20,9 +21,24 @@ const schame = z.object({
 });
 
 const { $get } = use$fetch();
+const { $purchasedServices } = use$order();
 
 const selectedUser = ref<User>();
+const serviceList = ref<Service[]>([]);
 const selectedServices = ref<Service[]>([]);
+// const selectedServicesSnap = computed(() =>
+//   selectedServices.value.map((s) => ({
+//     user: selectedUser.value,
+//     service: {
+//       //    amount: string;
+//       // actual_amount: string;
+//       // actual_price: string;
+//       // discount: number;
+//       // num: number;
+//       ...s,
+//     },
+//   }))
+// );
 const searchUser = async (q: string) => {
   const v = await $get<User[]>("/admin/user/search", (v) => v, {
     query: { q, user_id: undefined },
@@ -30,11 +46,10 @@ const searchUser = async (q: string) => {
   return v || [];
 };
 
-const searchService = async (q: string) => {
-  const v = await $get("/admin/service/search", (v) => v, {
-    query: { q, ids: undefined },
+const loadService = async () => {
+  await $get<Service[]>("/admin/service/all", (v) => {
+    serviceList.value = v || [];
   });
-  return v || [];
 };
 
 const onSubmit = async () => {};
@@ -50,6 +65,13 @@ watch(
   },
   { deep: true, immediate: true }
 );
+
+onMounted(() => {
+  const t = setTimeout(() => {
+    loadService().then();
+    clearTimeout(t);
+  }, 100);
+});
 </script>
 
 <template>
@@ -84,6 +106,41 @@ watch(
             <span>{{ option.nickname }}({{ option.email }})</span>
           </template></USelectMenu
         >
+      </UFormGroup>
+
+      <UFormGroup label="服务" name="" required>
+        <USelectMenu
+          v-model="selectedServices"
+          :options="serviceList"
+          :search-attributes="['name']"
+          searchable
+          multiple
+          clear-search-on-close
+        >
+          <template #option="{ option }">
+            <div class="flex justify-start items-center gap-x-2">
+              <div>
+                <span
+                  v-if="option.is_subject"
+                  class="px-1 py-0.5 text-[0.6rem] bg-orange-500 text-white rounded-md"
+                  >专题</span
+                >
+                <span
+                  v-else
+                  class="px-1 py-0.5 text-[0.6rem] bg-purple-500 text-white rounded-md"
+                  >订阅</span
+                >
+              </div>
+              <div>{{ option.name }}</div>
+              <div class="flex justify-start items-center gap-x-1">
+                <div>
+                  <img src="/usdt.svg" class="w-4 object-cover" alt="USDT" />
+                </div>
+                <div>{{ new Decimal(option.price) }}</div>
+              </div>
+            </div>
+          </template>
+        </USelectMenu>
       </UFormGroup>
     </UForm>
   </div>
