@@ -1,7 +1,81 @@
 <script setup lang="ts">
+import Decimal from "decimal.js";
+
 const modelValue = defineModel<OrderSnapShot[]>({ required: true });
+
+const rows = ref<OrderSnapShotService[]>([]);
+
+const columns = [
+  {
+    key: "name",
+    label: "名称",
+  },
+  {
+    key: "price",
+    label: "单价",
+  },
+  {
+    key: "num",
+    label: "数量",
+  },
+  {
+    key: "amount",
+    label: "金额",
+  },
+];
+
+watch(
+  () => modelValue.value,
+  (v) => {
+    console.log("@@@@", v);
+
+    rows.value = v.map((s) => s.service);
+  },
+  { deep: true }
+);
 </script>
 
 <template>
-  <UTable :rows="modelValue"></UTable>
+  <!-- <div>{{ rows }}</div> -->
+  <UTable :rows="rows" :columns="columns" v-if="rows && rows.length > 0">
+    <template #num-data="{ row }">
+      <div class="flex justify-start items-center gap-x-1">
+        <UButton
+          color="gray"
+          size="xs"
+          @click="
+            () => {
+              if (row.num <= 1) {
+                return;
+              }
+              row.num--;
+            }
+          "
+        >
+          -
+        </UButton>
+        <UInput v-model.number="row.num" size="xs" class="w-16" />
+        <UButton
+          color="gray"
+          size="xs"
+          @click="
+            () => {
+              if (row.num >= 999) {
+                return;
+              }
+              row.num++;
+            }
+          "
+        >
+          +
+        </UButton>
+      </div>
+    </template>
+    <template #amount-data="{ row }">
+      {{ new Decimal(row.price).mul(row.num) }}
+    </template>
+    <template #price-data="{ row }">
+      {{ new Decimal(row.price) }}
+    </template>
+  </UTable>
 </template>

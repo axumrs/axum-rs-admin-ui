@@ -109,6 +109,23 @@ await loadData();
         dayjs(row.dateline).format("YYYY-MM-DD HH:mm:ss")
       }}</span>
     </template>
+    <template #actions-data="{ row }">
+      <div class="flex justify-start items-center gap-x-1">
+        <UButton
+          color="cyan"
+          size="xs"
+          icon="ri:edit-line"
+          variant="outline"
+          @click="
+            () => {
+              showInput = true;
+              inputItem = { ...row };
+            }
+          "
+          >编辑</UButton
+        >
+      </div>
+    </template>
   </UTable>
 
   <UModal v-model="showInput">

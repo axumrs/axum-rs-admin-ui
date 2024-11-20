@@ -186,7 +186,7 @@ await loadData();
         size="xs"
         variant="subtle"
         color="orange"
-        >待验证</UBadge
+        >待激活</UBadge
       >
       <UBadge v-else size="xs" variant="subtle" color="red">已冻结</UBadge>
     </template>

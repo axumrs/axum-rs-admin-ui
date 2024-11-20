@@ -26,22 +26,14 @@ const { $purchasedServices } = use$order();
 const selectedUser = ref<User>();
 const serviceList = ref<Service[]>([]);
 const selectedServices = ref<Service[]>([]);
-// const selectedServicesSnap = computed(() =>
-//   selectedServices.value.map((s) => ({
-//     user: selectedUser.value,
-//     service: {
-//       //    amount: string;
-//       // actual_amount: string;
-//       // actual_price: string;
-//       // discount: number;
-//       // num: number;
-//       ...s,
-//     },
-//   }))
-// );
+const selectedServicesSnap = ref<OrderSnapShot[]>([]);
+
 const searchUser = async (q: string) => {
   const v = await $get<User[]>("/admin/user/search", (v) => v, {
-    query: { q, user_id: undefined },
+    query: {
+      q,
+      user_id: isEdit.value ? modelValue.value.user_id || undefined : undefined,
+    },
   });
   return v || [];
 };
@@ -50,6 +42,16 @@ const loadService = async () => {
   await $get<Service[]>("/admin/service/all", (v) => {
     serviceList.value = v || [];
   });
+};
+
+const loadUser = async () => {
+  if (isEdit.value && modelValue.value.user_id) {
+    await $get<User>(`/admin/user/${modelValue.value.user_id}`, (v) => {
+      if (v) {
+        selectedUser.value = v;
+      }
+    });
+  }
 };
 
 const onSubmit = async () => {};
@@ -63,14 +65,57 @@ watch(
       modelValue.value.user_id = "";
     }
   },
-  { deep: true, immediate: true }
+  { deep: true, immediate: false }
+);
+
+watch(
+  () => selectedServices.value,
+  (v) => {
+    console.log("@@@@", v);
+
+    selectedServicesSnap.value = v.map((s) => ({
+      service: {
+        ...s,
+        amount: s.price,
+        actual_amount: s.price,
+        actual_price: s.price,
+        discount: 0,
+        num: 1,
+      },
+      user: selectedUser.value || ({} as User),
+    }));
+  },
+  { deep: true }
+);
+
+watch(
+  () => selectedUser.value,
+  (v) => {
+    if (v) {
+      selectedServicesSnap.value.map((s) => (s.user = v));
+    }
+  }
 );
 
 onMounted(() => {
   const t = setTimeout(() => {
-    loadService().then();
+    Promise.all([loadService(), loadUser()]).then();
+
     clearTimeout(t);
   }, 100);
+});
+
+onMounted(() => {
+  if (isEdit.value) {
+    const t = setTimeout(() => {
+      const snap = $purchasedServices(modelValue.value);
+      const ids = snap.map((s) => s.service.id);
+      selectedServices.value = serviceList.value.filter((s) =>
+        ids.includes(s.id)
+      );
+      clearTimeout(t);
+    }, 500);
+  }
 });
 </script>
 
@@ -81,8 +126,6 @@ onMounted(() => {
       <span v-else>添加订单</span>
     </DailogTitle>
 
-    <div>Selected User: {{ selectedUser }}</div>
-    <div>Selected User id: {{ modelValue.user_id }}</div>
     <UForm
       :schema="schame"
       :state="modelValue"
@@ -97,13 +140,36 @@ onMounted(() => {
           placeholder="请输入昵称/邮箱搜索用户"
         >
           <template #label>
-            <span v-if="selectedUser"
-              >{{ selectedUser.nickname }}({{ selectedUser.email }})</span
+            <div
+              class="flex justify-start items-center gap-x-2"
+              v-if="selectedUser"
             >
+              <div class="flex justify-start items-center gap-x-1">
+                <Icon name="uil:user" />
+                <div>{{ selectedUser.nickname }}</div>
+              </div>
+              <div
+                class="flex justify-start items-center gap-x-1 text-gray-500"
+              >
+                <Icon name="uil:envelope" />
+                <div>{{ selectedUser.email }}</div>
+              </div>
+            </div>
             <span v-else>选择用户</span>
           </template>
           <template #option="{ option }">
-            <span>{{ option.nickname }}({{ option.email }})</span>
+            <div class="flex justify-start items-center gap-x-2">
+              <div class="flex justify-start items-center gap-x-1">
+                <Icon name="uil:user" />
+                <div>{{ option.nickname }}</div>
+              </div>
+              <div
+                class="flex justify-start items-center gap-x-1 text-gray-500"
+              >
+                <Icon name="uil:envelope" />
+                <div>{{ option.email }}</div>
+              </div>
+            </div>
           </template></USelectMenu
         >
       </UFormGroup>
@@ -141,6 +207,7 @@ onMounted(() => {
             </div>
           </template>
         </USelectMenu>
+        <OrderService v-model="selectedServicesSnap" />
       </UFormGroup>
     </UForm>
   </div>
