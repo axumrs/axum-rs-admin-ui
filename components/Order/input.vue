@@ -54,6 +54,15 @@ const loadUser = async () => {
   }
 };
 
+const loadPay = async () => {
+  if (isEdit.value && modelValue.value.id) {
+    await $get<OrderHasPay>(
+      `/admin/order/pay/${modelValue.value.id}`,
+      (v) => {}
+    );
+  }
+};
+
 const onSubmit = async () => {};
 
 watch(
@@ -71,8 +80,6 @@ watch(
 watch(
   () => selectedServices.value,
   (v) => {
-    console.log("@@@@", v);
-
     selectedServicesSnap.value = v.map((s) => ({
       service: {
         ...s,
@@ -99,7 +106,7 @@ watch(
 
 onMounted(() => {
   const t = setTimeout(() => {
-    Promise.all([loadService(), loadUser()]).then();
+    Promise.all([loadService(), loadUser(), loadPay()]).then();
 
     clearTimeout(t);
   }, 100);
@@ -209,6 +216,13 @@ onMounted(() => {
         </USelectMenu>
         <OrderService v-model="selectedServicesSnap" />
       </UFormGroup>
+
+      <UFormGroup label="支付金额和货币"></UFormGroup>
+      <UFormGroup label="支付方式"></UFormGroup>
+      <UFormGroup label="交易号"></UFormGroup>
+      <UFormGroup label="是否管理员生成"></UFormGroup>
+      <UFormGroup label="支付证明"></UFormGroup>
+      <UFormGroup label="审核意见"></UFormGroup>
     </UForm>
   </div>
 </template>
