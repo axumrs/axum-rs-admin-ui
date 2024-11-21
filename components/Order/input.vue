@@ -4,6 +4,9 @@ import { z } from "zod";
 const modelValue = defineModel<OrderWithUser>({ required: true });
 
 const isEdit = computed(() => modelValue.value.id.length === 20);
+const isReadOnly = computed(
+  () => isEdit.value && "Pending" !== modelValue.value.status
+);
 
 const schame = z.object({
   id: z.string().max(20, "ID 最多 20 个字符"),
@@ -20,13 +23,36 @@ const schame = z.object({
   nickname: z.string(),
 });
 
-const { $get } = use$fetch();
+const { $get, $post } = use$fetch();
 const { $purchasedServices } = use$order();
 
 const selectedUser = ref<User>();
 const serviceList = ref<Service[]>([]);
 const selectedServices = ref<Service[]>([]);
 const selectedServicesSnap = ref<OrderSnapShot[]>([]);
+
+const emptyPay = {
+  id: "",
+  order_id: modelValue.value.id,
+  user_id: modelValue.value.user_id,
+  amount: "",
+  currency: "USDT" as Currency,
+  tx_id: "",
+  method: "Online" as PaymentKind,
+  status: "Pending" as PayStatus,
+  is_via_admin: !false,
+  approved_time: "",
+  approved_opinion: "",
+  proof: "",
+  dateline: "",
+};
+
+const pay = ref<OrderHasPay>({
+  has_pay: false,
+  pay: {
+    ...emptyPay,
+  },
+});
 
 const searchUser = async (q: string) => {
   const v = await $get<User[]>("/admin/user/search", (v) => v, {
@@ -56,14 +82,42 @@ const loadUser = async () => {
 
 const loadPay = async () => {
   if (isEdit.value && modelValue.value.id) {
-    await $get<OrderHasPay>(
-      `/admin/order/pay/${modelValue.value.id}`,
-      (v) => {}
-    );
+    await $get<OrderHasPay>(`/admin/order/pay/${modelValue.value.id}`, (v) => {
+      if (v) {
+        if (v.has_pay) {
+          pay.value = v;
+        } else {
+          pay.value = {
+            has_pay: false,
+            pay: {
+              ...emptyPay,
+              is_via_admin: true,
+              order_id: modelValue.value.id,
+              user_id: modelValue.value.user_id,
+            },
+          };
+        }
+      }
+    });
   }
 };
 
-const onSubmit = async () => {};
+const currencyList: Currency[] = ["USDT", "TRX", "CNY", "PNT"];
+const payMethodList: PaymentKind[] = [
+  "Online",
+  "QrCode",
+  "WechatAlipay",
+  "Pointer",
+];
+// const payStatusList: PayStatus[] = ["Pending", "Success", "Failed"];
+const returnedSelectedServicesSnap = ref<OrderSnapShotService[]>([]);
+
+const onSubmit = async () => {
+  await $post("/admin/order", {
+    user_id: selectedUser.value?.id,
+    snap: [],
+  });
+};
 
 watch(
   () => selectedUser.value,
@@ -129,8 +183,11 @@ onMounted(() => {
 <template>
   <div class="p-6">
     <DailogTitle>
-      <span v-if="isEdit">修改订单</span>
-      <span v-else>添加订单</span>
+      <div v-if="isEdit">
+        <span v-if="isReadOnly">查看订单</span>
+        <span v-else>修改订单</span>
+      </div>
+      <div v-else>添加订单</div>
     </DailogTitle>
 
     <UForm
@@ -138,9 +195,11 @@ onMounted(() => {
       :state="modelValue"
       @submit="onSubmit"
       autocomplete="off"
-      class="my-6 space-y-4"
+      class="my-6 space-y-4 relative"
     >
-      <UFormGroup label="用户" name="user_id" required>
+      <div class="bg-black/5 absolute inset-0 z-10" v-if="isReadOnly"></div>
+      <UFormGroup label="用户" name="user_id" required class="relative">
+        <div class="bg-black/5 absolute inset-0 z-10" v-if="isEdit"></div>
         <USelectMenu
           v-model="selectedUser"
           :searchable="searchUser"
@@ -181,7 +240,8 @@ onMounted(() => {
         >
       </UFormGroup>
 
-      <UFormGroup label="服务" name="" required>
+      <UFormGroup label="服务" name="" required class="relative">
+        <div class="bg-black/5 absolute inset-0 z-10" v-if="isEdit"></div>
         <USelectMenu
           v-model="selectedServices"
           :options="serviceList"
@@ -214,15 +274,48 @@ onMounted(() => {
             </div>
           </template>
         </USelectMenu>
-        <OrderService v-model="selectedServicesSnap" />
+        <OrderService
+          v-model="selectedServicesSnap"
+          @change="
+            (amount, returnedSnap) => {
+              if (pay.pay.is_via_admin) {
+                pay.pay.amount = amount;
+              }
+              returnedSelectedServicesSnap = returnedSnap;
+            }
+          "
+        />
       </UFormGroup>
 
-      <UFormGroup label="支付金额和货币"></UFormGroup>
-      <UFormGroup label="支付方式"></UFormGroup>
-      <UFormGroup label="交易号"></UFormGroup>
-      <UFormGroup label="是否管理员生成"></UFormGroup>
-      <UFormGroup label="支付证明"></UFormGroup>
-      <UFormGroup label="审核意见"></UFormGroup>
+      <UFormGroup label="支付金额和货币" class="relative">
+        <div
+          class="bg-black/5 absolute inset-0 z-10"
+          v-if="isEdit && !pay.pay.is_via_admin"
+        ></div>
+        <div class="flex justify-start items-center gap-x-1">
+          <UInput v-model="pay.pay.amount" />
+          <USelect :options="currencyList" v-model="pay.pay.currency" />
+        </div>
+      </UFormGroup>
+      <UFormGroup label="支付方式">
+        <USelect :options="payMethodList" v-model="pay.pay.method" />
+      </UFormGroup>
+      <UFormGroup label="交易号">
+        <UInput v-model="pay.pay.tx_id" />
+      </UFormGroup>
+
+      <UFormGroup label="支付证明">
+        <UInput v-model="pay.pay.proof" />
+      </UFormGroup>
+      <UFormGroup label="审核意见">
+        <UInput v-model="pay.pay.approved_opinion" />
+      </UFormGroup>
+
+      <div v-if="pay.pay.is_via_admin">该支付由后台添加</div>
+
+      <div class="flex justify-end">
+        <UButton type="submit" color="blue" size="md">提交</UButton>
+      </div>
     </UForm>
   </div>
 </template>

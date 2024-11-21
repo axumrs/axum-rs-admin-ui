@@ -1,12 +1,13 @@
+type PayStatus = "Pending" | "Failed" | "Success";
 type Pay = {
   id: string;
   order_id: string;
   user_id: string;
   amount: string;
-  currency: string;
+  currency: Currency;
   tx_id: string;
-  method: string;
-  status: string;
+  method: PaymentKind;
+  status: PayStatus;
   is_via_admin: boolean;
   approved_time: string;
   approved_opinion: string;
@@ -16,5 +17,5 @@ type Pay = {
 
 type OrderHasPay = {
   has_pay: boolean;
-  pay: Pay | null;
+  pay: Pay;
 };

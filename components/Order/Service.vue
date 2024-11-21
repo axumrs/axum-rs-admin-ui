@@ -24,12 +24,26 @@ const columns = [
   },
 ];
 
+const amout = computed(() =>
+  rows.value.reduce(
+    (a, b) => new Decimal(a).add(new Decimal(b.price).mul(b.num)).toString(),
+    "0"
+  )
+);
+
+const emits = defineEmits(["change"]);
+
 watch(
   () => modelValue.value,
   (v) => {
-    console.log("@@@@", v);
-
     rows.value = v.map((s) => s.service);
+  },
+  { deep: true }
+);
+watch(
+  () => rows.value,
+  () => {
+    emits("change", amout.value, rows.value);
   },
   { deep: true }
 );
@@ -78,4 +92,5 @@ watch(
       {{ new Decimal(row.price) }}
     </template>
   </UTable>
+  <!-- <div>总金额: {{ amout }}</div> -->
 </template>
