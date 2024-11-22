@@ -115,7 +115,17 @@ const returnedSelectedServicesSnap = ref<OrderSnapShotService[]>([]);
 const onSubmit = async () => {
   await $post("/admin/order", {
     user_id: selectedUser.value?.id,
-    snap: [],
+    snap: returnedSelectedServicesSnap.value.map((s) => ({
+      service: s,
+      user: selectedUser.value,
+    })),
+    amount: pay.value.pay.amount,
+    currency: pay.value.pay.currency,
+    method: pay.value.pay.method,
+    tx_id: pay.value.pay.tx_id,
+    is_via_admin: pay.value.pay.is_via_admin,
+    approved_opinion: pay.value.pay.approved_opinion,
+    proof: pay.value.pay.proof,
   });
 };
 
