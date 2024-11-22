@@ -23,7 +23,7 @@ const schame = z.object({
   nickname: z.string(),
 });
 
-const { $get, $post } = use$fetch();
+const { $get, $post, $put } = use$fetch();
 const { $purchasedServices } = use$order();
 
 const selectedUser = ref<User>();
@@ -112,21 +112,49 @@ const payMethodList: PaymentKind[] = [
 // const payStatusList: PayStatus[] = ["Pending", "Success", "Failed"];
 const returnedSelectedServicesSnap = ref<OrderSnapShotService[]>([]);
 
+const emits = defineEmits(["submit"]);
 const onSubmit = async () => {
-  await $post("/admin/order", {
-    user_id: selectedUser.value?.id,
-    snap: returnedSelectedServicesSnap.value.map((s) => ({
-      service: s,
-      user: selectedUser.value,
-    })),
-    amount: pay.value.pay.amount,
-    currency: pay.value.pay.currency,
-    method: pay.value.pay.method,
-    tx_id: pay.value.pay.tx_id,
-    is_via_admin: pay.value.pay.is_via_admin,
-    approved_opinion: pay.value.pay.approved_opinion,
-    proof: pay.value.pay.proof,
-  });
+  if (!isEdit.value) {
+    await $post(
+      "/admin/order",
+      {
+        user_id: selectedUser.value?.id,
+        snap: returnedSelectedServicesSnap.value.map((s) => ({
+          service: s,
+          user: selectedUser.value,
+        })),
+        amount: pay.value.pay.amount,
+        currency: pay.value.pay.currency,
+        method: pay.value.pay.method,
+        tx_id: pay.value.pay.tx_id,
+        is_via_admin: pay.value.pay.is_via_admin,
+        approved_opinion: pay.value.pay.approved_opinion,
+        proof: pay.value.pay.proof,
+      },
+      () => {
+        emits("submit");
+      }
+    );
+    return;
+  }
+
+  await $put(
+    "/admin/order",
+    {
+      user_id: selectedUser.value?.id,
+      id: modelValue.value.id,
+      amount: pay.value.pay.amount,
+      currency: pay.value.pay.currency,
+      method: pay.value.pay.method,
+      tx_id: pay.value.pay.tx_id,
+      is_via_admin: pay.value.pay.is_via_admin,
+      approved_opinion: pay.value.pay.approved_opinion,
+      proof: pay.value.pay.proof,
+    },
+    () => {
+      emits("submit");
+    }
+  );
 };
 
 watch(
