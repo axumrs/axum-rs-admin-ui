@@ -41,7 +41,7 @@ const links = [
     },
     {
       label: "订单",
-      icon: "ri:server-line",
+      icon: "lsicon:order-integral-outline",
       to: "/order",
       labelClass: "text-lg",
     },

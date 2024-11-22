@@ -25,6 +25,7 @@ const statusList = [
 const kindList = [
   { label: "普通用户", value: "Normal" },
   { label: "订阅用户", value: "Subscriber" },
+  { label: "订阅用户", value: "YearlySubscriber" },
 ];
 
 const emptyFrm = {
@@ -192,7 +193,15 @@ await loadData();
     </template>
 
     <template #kind-data="{ row }">
-      <div v-if="row.kind === 'Subscriber'" class="space-y-1">
+      <div v-if="row.kind === 'YearlySubscriber'" class="space-y-1">
+        <div>
+          <UBadge size="xs" variant="subtle" color="red">年度订阅用户</UBadge>
+        </div>
+        <div class="text-xs">
+          {{ dayjs(row.sub_exp).format("YYYY-MM-DD HH:mm:ss") }}
+        </div>
+      </div>
+      <div v-else-if="row.kind === 'Subscriber'" class="space-y-1">
         <div>
           <UBadge size="xs" variant="subtle" color="orange">订阅用户</UBadge>
         </div>
