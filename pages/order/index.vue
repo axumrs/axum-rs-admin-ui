@@ -2,6 +2,29 @@
 import dayjs from "dayjs";
 import Decimal from "decimal.js";
 
+const statusList = [
+  { value: "Pending", label: "待支付" },
+  { value: "Finished", label: "已完成" },
+  { value: "Cancelled", label: "已取消" },
+  { value: "Closed", label: "已关闭" },
+];
+const emptyFrm = {
+  email: undefined,
+  nickname: undefined,
+  status: undefined,
+  page: 0,
+  page_size: 30,
+};
+const frm = ref<{
+  email?: string;
+  nickname?: string;
+  status?: string;
+  page: number;
+  page_size?: number;
+}>({
+  ...emptyFrm,
+});
+
 const pm = ref<PaginationMeta>();
 const rows = ref<OrderWithUser[]>([]);
 
@@ -59,12 +82,16 @@ const { $get, $put } = use$fetch();
 const { $status, $purchasedServices } = use$order();
 const { $msg } = use$status();
 const loadData = async () => {
-  await $get<Pagination<OrderWithUser>>("/admin/order", (v) => {
-    if (v) {
-      pm.value = v;
-      rows.value = v.data || [];
-    }
-  });
+  await $get<Pagination<OrderWithUser>>(
+    "/admin/order",
+    (v) => {
+      if (v) {
+        pm.value = v;
+        rows.value = v.data || [];
+      }
+    },
+    { query: { ...frm.value } }
+  );
 };
 
 const handleSubmit = async () => {
@@ -83,6 +110,9 @@ const handleClose = async () => {
     });
   }
 };
+
+const { $neq } = use$obj();
+
 await loadData();
 </script>
 
@@ -91,12 +121,43 @@ await loadData();
 
   <Toolbar
     class="my-6"
+    :show-clear="$neq(frm, emptyFrm, ['page'])"
     @add="
       () => {
         showInput = true;
         inputItem = { ...emptyItem };
       }
     "
+    @clear="
+      () => {
+        frm = { ...emptyFrm };
+      }
+    "
+    @search="
+      () => {
+        frm = { ...frm, page: 0 };
+        loadData().then();
+      }
+    "
+  >
+    <ToolbarItem>
+      <template #label>邮箱</template>
+      <UInput size="xs" v-model="frm.email" />
+    </ToolbarItem>
+    <ToolbarItem>
+      <template #label>昵称</template>
+      <UInput size="xs" v-model="frm.nickname" />
+    </ToolbarItem>
+
+    <ToolbarItem>
+      <template #label>状态</template>
+      <USelect
+        v-model="frm.status"
+        :options="statusList"
+        option-attribute="label"
+        value-attribute="value"
+        size="xs"
+      /> </ToolbarItem
   ></Toolbar>
 
   <UTable :rows="rows" class="axum-table bg-white my-6" :columns="columns">
@@ -203,6 +264,19 @@ await loadData();
       </div>
     </template>
   </UTable>
+
+  <div class="flex justify-end">
+    <Pagination
+      v-model="pm"
+      v-if="pm"
+      @change="
+        (p) => {
+          frm.page = p;
+          loadData().then();
+        }
+      "
+    />
+  </div>
 
   <UModal v-model="showInput">
     <OrderInput v-model="inputItem" @submit="handleSubmit" />
