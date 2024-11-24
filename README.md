@@ -10,13 +10,13 @@
 
 ## 技术栈
 
-后台 UI 使用的是 React 结合 antd 客户端渲染：
+后台 UI 使用的是 Nuxt：
 
-- React
+- Nuxt
 
-- Antd
+- Nuxt UI
 
-- Antd ProComponent
+- Tailwind CSS
 
 ## 捐助
 
