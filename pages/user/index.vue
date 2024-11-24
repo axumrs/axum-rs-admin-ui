@@ -25,7 +25,7 @@ const statusList = [
 const kindList = [
   { label: "普通用户", value: "Normal" },
   { label: "订阅用户", value: "Subscriber" },
-  { label: "订阅用户", value: "YearlySubscriber" },
+  { label: "年度订阅用户", value: "YearlySubscriber" },
 ];
 
 const emptyFrm = {

@@ -13,7 +13,9 @@ const schema = z.object({
     .min(3, "昵称至少 3 个字符")
     .max(30, "昵称最多 30 个字符"),
   status: z.enum(["Pending", "Actived", "Freezed"], { message: "请选择状态" }),
-  kind: z.enum(["Normal", "Subscriber"], { message: "请选择用户类型" }),
+  kind: z.enum(["Normal", "Subscriber", "YearlySubscriber"], {
+    message: "请选择用户类型",
+  }),
   sub_exp: z.string(),
   points: z.string(),
   allow_device_num: z
@@ -37,6 +39,7 @@ const statusList = [
 const kindList = [
   { label: "普通用户", value: "Normal" },
   { label: "订阅用户", value: "Subscriber" },
+  { label: "年度订阅用户", value: "YearlySubscriber" },
 ];
 
 type Schema = z.output<typeof schema>;
@@ -114,7 +117,7 @@ const onSubmit = async (_: FormSubmitEvent<Schema>) => {
         label="过期时间"
         name="sub_exp"
         required
-        v-if="modelValue.kind === 'Subscriber'"
+        v-if="modelValue.kind !== 'Normal'"
       >
         <DateTimePick v-model="modelValue.sub_exp" class="" />
       </UFormGroup>
