@@ -45,6 +45,12 @@ const links = [
       to: "/order",
       labelClass: "text-lg",
     },
+    {
+      label: "公告",
+      icon: "ic:outline-announcement",
+      to: "/announcement",
+      labelClass: "text-lg",
+    },
   ],
   [
     {
