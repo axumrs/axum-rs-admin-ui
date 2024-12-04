@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "axum-rs-admin-ui",
   "private": true,
   "type": "module",
   "scripts": {
