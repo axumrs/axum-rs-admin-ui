@@ -51,6 +51,12 @@ const links = [
       to: "/announcement",
       labelClass: "text-lg",
     },
+    {
+      label: "推广",
+      icon: "iconamoon:certificate-badge",
+      to: "/promotion",
+      labelClass: "text-lg",
+    },
   ],
   [
     {

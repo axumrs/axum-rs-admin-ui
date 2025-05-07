@@ -20,5 +20,8 @@
     "vue-turnstile": "^1.0.11",
     "zod": "^3.23.8"
   },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
+  "devDependencies": {
+    "@iconify-json/iconamoon": "^1.2.2"
+  }
 }
